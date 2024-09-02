@@ -95,7 +95,6 @@ graph TD
     A --> I
     I --> B
     B --> C
-    B --> E
     C <--> D
     C <--> E
     E --> F
@@ -106,23 +105,23 @@ graph TD
     G <--> F
     G <--> H
     H <--> C
-    J --> A
-    J --> B
-    J --> D
-    J --> E
-    J --> F
-    J --> G
-    J --> H
-    K --> A
-    K --> B
-    K --> C
-    K --> D
-    K --> E
-    K --> F
-    K --> G
-    K --> H
-    K --> I
-    K --> J
+    J -.-> A
+    J -.-> B
+    J -.-> D
+    J -.-> E
+    J -.-> F
+    J -.-> G
+    J -.-> H
+    K -.-> A
+    K -.-> B
+    K -.-> C
+    K -.-> D
+    K -.-> E
+    K -.-> F
+    K -.-> G
+    K -.-> H
+    K -.-> I
+    K -.-> J
 ```
 
 ### 데이터 흐름도
