@@ -125,6 +125,69 @@ graph TD
     K --> J
 ```
 
+### 데이터 흐름도
+
+```mermaid
+sequenceDiagram
+    participant KIS as KIS REST API
+    participant DataCollect as 데이터 수집 서버
+    participant Queue as RabbitMQ
+    participant DataProcess as 데이터 전처리 서버
+    participant DB as TimescaleDB
+    participant Model as 모델 학습 서버
+    participant Inference as 추론 서버
+    participant Trading as 트레이딩 실행 서버
+    participant Monitor as 모니터링 서버
+    participant Web as 웹 인터페이스
+
+    DataCollect->>KIS: 과거/실시간 시장 데이터 요청
+    KIS-->>DataCollect: 시장 데이터 응답
+    DataCollect->>Queue: 수집된 데이터 전송
+
+    Queue-->>DataProcess: 데이터 소비
+    DataProcess->>DB: 전처리된 데이터 저장
+    DataProcess->>Inference: 실시간 전처리 데이터 전송
+
+    loop 주기적 학습
+        Model->>DB: 학습 데이터 요청
+        DB-->>Model: 학습 데이터 응답
+        Model->>Model: 모델 학습
+        Model->>DB: 학습된 모델 저장
+    end
+
+    loop 실시간 추론
+        Inference->>DB: 최신 모델 로드 (주기적)
+        Inference->>Inference: 추론 수행
+        Inference->>Trading: 트레이딩 결정 직접 전송
+    end
+
+    Trading->>KIS: 주문 실행
+    KIS-->>Trading: 주문 결과
+    Trading->>DB: 거래 결과 저장
+
+    Monitor->>DB: 로그 및 성능 데이터 수집
+    Monitor->>Monitor: 데이터 분석
+
+    Web->>DB: 대시보드 데이터 요청
+    DB-->>Web: 대시보드 데이터 응답
+    Web->>Web: 대시보드 업데이트
+    Web->>Model: 학습 파라미터 조정 (필요시)
+    Web->>Trading: 수동 거래 명령 (필요시)
+```
+
+이 데이터 흐름도는 시스템의 각 컴포넌트 간 상호작용을 시각적으로 표현합니다:
+
+1. 데이터 수집 서버가 KIS REST API로부터 시장 데이터를 수집합니다.
+2. 수집된 데이터는 RabbitMQ를 통해 데이터 전처리 서버로 전송됩니다.
+3. 전처리된 데이터는 TimescaleDB에 저장되고, 실시간으로 추론 서버에 전송됩니다.
+4. 모델 학습 서버는 주기적으로 데이터베이스에서 데이터를 가져와 모델을 학습하고 업데이트합니다.
+5. 추론 서버는 최신 모델을 사용하여 실시간으로 트레이딩 결정을 내리고, 이를 트레이딩 실행 서버에 전송합니다.
+6. 트레이딩 실행 서버는 KIS API를 통해 실제 주문을 실행하고 결과를 데이터베이스에 저장합니다.
+7. 모니터링 서버는 지속적으로 시스템 성능을 모니터링하고 분석합니다.
+8. 웹 인터페이스는 사용자에게 실시간 대시보드를 제공하고, 필요시 수동 개입을 가능하게 합니다.
+
+이 흐름은 데이터의 수집부터 거래 실행까지의 전체 과정을 포괄하며, 시스템의 각 부분이 어떻게 상호작용하는지 명확히 보여줍니다.
+
 ## 설치 및 실행
 
 1. 저장소 클론:
