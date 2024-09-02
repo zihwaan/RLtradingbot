@@ -227,52 +227,248 @@ sequenceDiagram
 
 자세한 API 명세는 [API 문서](docs/api_docs.md)를 참조하세요.
 
-## 프로젝트 구조
+## 트레이딩 봇 프로젝트 상세 구조
 
 ```
 /
 ├── api-gateway/
 │   ├── main.py
+│   ├── requirements.txt
+│   ├── Dockerfile
 │   ├── routes/
-│   └── middlewares/
+│   │   ├── __init__.py
+│   │   ├── data_routes.py
+│   │   ├── model_routes.py
+│   │   ├── inference_routes.py
+│   │   ├── trade_routes.py
+│   │   └── dashboard_routes.py
+│   ├── middlewares/
+│   │   ├── __init__.py
+│   │   ├── auth_middleware.py
+│   │   └── logging_middleware.py
+│   └── config/
+│       ├── __init__.py
+│       └── settings.py
 ├── data-collector/
 │   ├── main.py
+│   ├── requirements.txt
+│   ├── Dockerfile
 │   ├── collectors/
-│   └── models/
+│   │   ├── __init__.py
+│   │   ├── market_data_collector.py
+│   │   └── historical_data_collector.py
+│   ├── models/
+│   │   ├── __init__.py
+│   │   └── data_models.py
+│   └── config/
+│       ├── __init__.py
+│       └── settings.py
 ├── data-processor/
 │   ├── main.py
+│   ├── requirements.txt
+│   ├── Dockerfile
 │   ├── processors/
-│   └── features/
+│   │   ├── __init__.py
+│   │   ├── data_cleaner.py
+│   │   └── feature_extractor.py
+│   ├── features/
+│   │   ├── __init__.py
+│   │   ├── technical_indicators.py
+│   │   └── fundamental_features.py
+│   └── config/
+│       ├── __init__.py
+│       └── settings.py
 ├── model-trainer/
 │   ├── main.py
+│   ├── requirements.txt
+│   ├── Dockerfile
 │   ├── models/
-│   └── trainers/
+│   │   ├── __init__.py
+│   │   ├── lstm_model.py
+│   │   └── a3c_model.py
+│   ├── trainers/
+│   │   ├── __init__.py
+│   │   ├── lstm_trainer.py
+│   │   └── a3c_trainer.py
+│   ├── utils/
+│   │   ├── __init__.py
+│   │   └── data_loader.py
+│   └── config/
+│       ├── __init__.py
+│       └── settings.py
 ├── inferencer/
 │   ├── main.py
+│   ├── requirements.txt
+│   ├── Dockerfile
 │   ├── models/
-│   └── predictors/
+│   │   ├── __init__.py
+│   │   └── model_loader.py
+│   ├── predictors/
+│   │   ├── __init__.py
+│   │   └── predictor.py
+│   └── config/
+│       ├── __init__.py
+│       └── settings.py
 ├── trader/
 │   ├── main.py
+│   ├── requirements.txt
+│   ├── Dockerfile
 │   ├── executors/
-│   └── strategies/
+│   │   ├── __init__.py
+│   │   └── order_executor.py
+│   ├── strategies/
+│   │   ├── __init__.py
+│   │   └── trading_strategy.py
+│   ├── models/
+│   │   ├── __init__.py
+│   │   └── order_models.py
+│   └── config/
+│       ├── __init__.py
+│       └── settings.py
 ├── web-interface/
 │   ├── main.py
+│   ├── requirements.txt
+│   ├── Dockerfile
 │   ├── static/
-│   └── templates/
+│   │   ├── css/
+│   │   │   └── styles.css
+│   │   ├── js/
+│   │   │   ├── dashboard.js
+│   │   │   └── charts.js
+│   │   └── img/
+│   │       └── logo.png
+│   ├── templates/
+│   │   ├── base.html
+│   │   ├── dashboard.html
+│   │   ├── settings.html
+│   │   └── logs.html
+│   ├── routes/
+│   │   ├── __init__.py
+│   │   ├── dashboard_routes.py
+│   │   └── api_routes.py
+│   └── config/
+│       ├── __init__.py
+│       └── settings.py
 ├── common/
+│   ├── __init__.py
 │   ├── database.py
 │   ├── logger.py
-│   └── config.py
+│   ├── utils.py
+│   └── exceptions.py
 ├── tests/
 │   ├── unit/
+│   │   ├── test_data_collector.py
+│   │   ├── test_data_processor.py
+│   │   ├── test_model_trainer.py
+│   │   ├── test_inferencer.py
+│   │   └── test_trader.py
 │   └── integration/
+│       ├── test_data_pipeline.py
+│       ├── test_model_pipeline.py
+│       └── test_trading_pipeline.py
 ├── docs/
 │   ├── api_docs.md
-│   └── architecture.md
-└── deployment/
-    ├── docker-compose.yml
-    └── kubernetes/
+│   ├── architecture.md
+│   ├── setup_guide.md
+│   └── user_manual.md
+├── deployment/
+│   ├── docker-compose.yml
+│   ├── nginx.conf
+│   └── kubernetes/
+│       ├── api-gateway-deployment.yaml
+│       ├── data-collector-deployment.yaml
+│       ├── data-processor-deployment.yaml
+│       ├── model-trainer-deployment.yaml
+│       ├── inferencer-deployment.yaml
+│       ├── trader-deployment.yaml
+│       └── web-interface-deployment.yaml
+├── scripts/
+│   ├── setup.sh
+│   ├── run_tests.sh
+│   └── deploy.sh
+├── .gitignore
+├── README.md
+└── requirements.txt
 ```
+
+## 주요 컴포넌트 설명
+
+### 1. API 게이트웨이 (api-gateway/)
+- `main.py`: FastAPI 애플리케이션의 진입점
+- `routes/`: 각 서비스에 대한 라우트 정의
+- `middlewares/`: 인증 및 로깅 미들웨어
+- `config/`: API 게이트웨이 설정
+
+### 2. 데이터 수집기 (data-collector/)
+- `collectors/`: 시장 데이터 및 과거 데이터 수집 로직
+- `models/`: 데이터 모델 정의
+- `config/`: 데이터 수집기 설정
+
+### 3. 데이터 처리기 (data-processor/)
+- `processors/`: 데이터 정제 및 특성 추출 로직
+- `features/`: 기술적 지표 및 기본적 특성 계산
+- `config/`: 데이터 처리기 설정
+
+### 4. 모델 트레이너 (model-trainer/)
+- `models/`: LSTM 및 A3C 모델 구현
+- `trainers/`: 모델 학습 로직
+- `utils/`: 데이터 로딩 등의 유틸리티 함수
+- `config/`: 모델 트레이너 설정
+
+### 5. 추론기 (inferencer/)
+- `models/`: 학습된 모델 로딩
+- `predictors/`: 실시간 예측 로직
+- `config/`: 추론기 설정
+
+### 6. 트레이더 (trader/)
+- `executors/`: 주문 실행 로직
+- `strategies/`: 트레이딩 전략 구현
+- `models/`: 주문 관련 데이터 모델
+- `config/`: 트레이더 설정
+
+### 7. 웹 인터페이스 (web-interface/)
+- `static/`: CSS, JavaScript, 이미지 파일
+- `templates/`: HTML 템플릿
+- `routes/`: 웹 인터페이스 라우트 및 API 엔드포인트
+- `config/`: 웹 인터페이스 설정
+
+### 8. 공통 모듈 (common/)
+- 데이터베이스 연결, 로깅, 유틸리티 함수 등 공통 기능
+
+### 9. 테스트 (tests/)
+- `unit/`: 각 컴포넌트의 단위 테스트
+- `integration/`: 여러 컴포넌트를 통합한 테스트
+
+### 10. 문서 (docs/)
+- API 문서, 아키텍처 설명, 설정 가이드, 사용자 매뉴얼
+
+### 11. 배포 (deployment/)
+- Docker Compose 설정
+- Kubernetes 배포 파일
+- Nginx 설정
+
+### 12. 스크립트 (scripts/)
+- 환경 설정, 테스트 실행, 배포 자동화 스크립트
+
+## 주요 파일 설명
+
+- `main.py`: 각 서비스의 주 진입점. FastAPI 애플리케이션 초기화 및 설정
+- `requirements.txt`: 각 서비스의 Python 의존성 목록
+- `Dockerfile`: 각 서비스의 Docker 이미지 빌드 설정
+- `__init__.py`: Python 패키지 초기화 파일
+- `settings.py`: 서비스별 설정 파일 (환경 변수, 상수 등)
+
+## 개발 및 배포 워크플로우
+
+1. 개발자는 각 컴포넌트 폴더에서 독립적으로 개발
+2. 공통 모듈은 `common/` 폴더에 구현하여 재사용
+3. 단위 테스트는 `tests/unit/`에, 통합 테스트는 `tests/integration/`에 작성
+4. `scripts/run_tests.sh`를 사용하여 모든 테스트 실행
+5. 각 서비스는 독립적으로 Dockerize되어 `deployment/docker-compose.yml`로 로컬 테스트
+6. Kubernetes 배포는 `deployment/kubernetes/` 폴더의 YAML 파일 사용
+7. `scripts/deploy.sh`를 사용하여 프로덕션 환경에 배포
+
+이 구조는 마이크로서비스 아키텍처를 따르며, 각 컴포넌트를 독립적으로 개발, 테스트, 배포할 수 있도록 설계되었습니다. 또한 공통 모듈을 통해 코드 재사용성을 높이고, 문서화와 테스트를 통해 프로젝트의 유지보수성과 안정성을 확보합니다.
 
 ## 설치 및 실행
 
