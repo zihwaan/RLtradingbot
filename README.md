@@ -13,7 +13,7 @@
    - 기능: KIS REST API를 통한 과거 및 실시간 시장 데이터 수집
 
 2. **데이터 전처리 서버**
-   - 기술 스택: Python, FastAPI, pandas
+   - 기술 스택: Python, FastAPI, TA-lib
    - 기능: 수집된 데이터의 전처리 및 특성 추출
 
 3. **데이터베이스**
